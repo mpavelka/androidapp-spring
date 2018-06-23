@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Spring</string>
+    <string name="action_settings">Settings</string>
+    <string name="daily_plan_c">Daily Plan</string>
+    <string name="example_activity">Example Activity</string>
+    <string name="button_drink">Drink!</string>
+    <string name="button_done">Done</string>
+    <string name="todays_consumption_c">Today\'s consumption</string>
+    <string name="deficit_c">Deficit</string>
+
+    <string name="plan_c">Plan</string>
+    <string name="from_c">From</string>
+    <string name="to_c">To</string>
+    <string name="reset_c">Reset</string>
+
+    <string name="sp_consumed_ml">sp_consumed_ml</string>
+    <string name="sp_from_hour_of_day">sp_from_hour_of_day</string>
+    <string name="sp_from_minute">sp_from_minute</string>
+    <string name="sp_to_hour_of_day">sp_to_hour_of_day</string>
+    <string name="sp_to_minute">sp_to_minute</string>
+    <string name="sp_plan">sp_plan</string>
+</resources>
