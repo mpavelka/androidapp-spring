@@ -42,16 +42,12 @@ public class SpringManager {
     public void setConsumedMl(int ml) {
         consumedMl = ml;
     }
-    public void setPlanFromHourOfDay(int hourOfDay) {
+    public void setPlanFrom(int hourOfDay, int minute) {
         planFromHourOfDay = hourOfDay;
-    }
-    public void setPlanFromMinute(int minute) {
         planFromMinute = minute;
     }
-    public void setPlanToHourOfDay(int hourOfDay) {
+    public void setPlanTo(int hourOfDay, int minute) {
         planToHourOfDay = hourOfDay;
-    }
-    public void setPlanToMinute(int minute) {
         planToMinute = minute;
     }
 

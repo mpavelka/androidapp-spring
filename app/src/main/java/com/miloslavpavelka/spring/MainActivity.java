@@ -138,8 +138,7 @@ public class MainActivity extends AppCompatActivity {
         timePickerFragment.setOnTimeSetListener(new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                springManager.setPlanFromHourOfDay(hourOfDay);
-                springManager.setPlanFromMinute(minute);
+                springManager.setPlanFrom(hourOfDay, minute);
                 updateEditTexts();
             }
         });
@@ -153,8 +152,7 @@ public class MainActivity extends AppCompatActivity {
         timePickerFragment.setOnTimeSetListener(new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                springManager.setPlanToHourOfDay(hourOfDay);
-                springManager.setPlanToMinute(minute);
+                springManager.setPlanTo(hourOfDay, minute);
                 updateEditTexts();
             }
         });
