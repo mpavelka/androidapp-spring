@@ -89,6 +89,9 @@ public class MainActivity extends AppCompatActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.action_reset:
+                springManager.setConsumedMl(0);
+                springManager.store();
+                updateUI();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -180,6 +183,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPlanSet(int plan) {
                 springManager.setDailyPlanMl(plan);
+                springManager.store();
                 updateUI();
             }
         });
@@ -195,6 +199,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                 springManager.setPlanFrom(hourOfDay, minute);
+                springManager.store();
                 updateUI();
             }
         });
@@ -209,6 +214,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                 springManager.setPlanTo(hourOfDay, minute);
+                springManager.store();
                 updateUI();
             }
         });
@@ -221,6 +227,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 springManager.drinkMl(drinkDialogFragment.getResult());
+                springManager.store();
                 updateUI();
 
             }
