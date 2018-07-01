@@ -35,6 +35,54 @@ public class SpringManager {
         this.reset();
     }
 
+    // Setters
+    public void setDailyPlanMl(int ml) {
+        dailyPlanMl = ml;
+    }
+    public void setConsumedMl(int ml) {
+        consumedMl = ml;
+    }
+    public void setPlanFromHourOfDay(int hourOfDay) {
+        planFromHourOfDay = hourOfDay;
+    }
+    public void setPlanFromMinute(int minute) {
+        planFromMinute = minute;
+    }
+    public void setPlanToHourOfDay(int hourOfDay) {
+        planToHourOfDay = hourOfDay;
+    }
+    public void setPlanToMinute(int minute) {
+        planToMinute = minute;
+    }
+
+    // Getters
+    public int getDailyPlanMl() {
+        return dailyPlanMl;
+    }
+    public int getConsumedMl() {
+        return consumedMl;
+    }
+    public int getDeficitMl() {
+        return deficitMl;
+    }
+    public int getPlanFromHourOfDay() {
+        return planFromHourOfDay;
+    }
+    public int getPlanFromMinute() {
+        return planFromMinute;
+    }
+    public int getPlanToHourOfDay() {
+        return planToHourOfDay;
+    }
+    public int getPlanToMinute() {
+        return planToMinute;
+    }
+    public float getConsumedPlanRatio() {
+        if (dailyPlanMl == 0)
+            return 1;
+        return consumedMl/dailyPlanMl;
+    }
+
     private SharedPreferences getPreferences() {
         return this.context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
     }
