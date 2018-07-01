@@ -16,8 +16,8 @@ public class SpringManager {
             SHARED_PREF_NAME = "springmgr",
             SP_FROM_HOUR_OF_DAY = "fromHourOfDay",
             SP_FROM_MINUTE = "fromMinute",
-            SP_TO_HOUR_OF_DAY = "fromHourOfDay",
-            SP_TO_MINUTE = "fromHourOfDay",
+            SP_TO_HOUR_OF_DAY = "toHourOfDay",
+            SP_TO_MINUTE = "toMinute",
             SP_CONSUMED_ML = "consumedMl",
             SP_DAILY_PLAN_ML = "dailyPlanMl";
 
@@ -118,12 +118,12 @@ public class SpringManager {
 
     void load() {
         SharedPreferences prefs = this.getPreferences();
-        this.dailyPlanMl = prefs.getInt(SP_DAILY_PLAN_ML, 0);
-        this.consumedMl = prefs.getInt(SP_CONSUMED_ML, 0);
-        this.planFromHourOfDay = prefs.getInt(SP_FROM_HOUR_OF_DAY, 0);
-        this.planFromMinute = prefs.getInt(SP_FROM_MINUTE, 0);
-        this.planToHourOfDay = prefs.getInt(SP_TO_HOUR_OF_DAY, 0);
-        this.planToMinute = prefs.getInt(SP_TO_MINUTE, 0);
+        planFromHourOfDay = prefs.getInt(SP_FROM_HOUR_OF_DAY, 0);
+        planFromMinute = prefs.getInt(SP_FROM_MINUTE, 0);
+        planToHourOfDay = prefs.getInt(SP_TO_HOUR_OF_DAY, 0);
+        planToMinute = prefs.getInt(SP_TO_MINUTE, 0);
+        consumedMl = prefs.getInt(SP_CONSUMED_ML, 0);
+        dailyPlanMl = prefs.getInt(SP_DAILY_PLAN_ML, 0);
 
         // Compute deficit
         this.deficitMl = this.computeDeficitMl();
@@ -133,12 +133,12 @@ public class SpringManager {
         SharedPreferences prefs = this.getPreferences();
         SharedPreferences.Editor editor = prefs.edit();
 
-        editor.putInt(SP_FROM_HOUR_OF_DAY, this.planFromHourOfDay);
-        editor.putInt(SP_FROM_MINUTE, this.planFromMinute);
-        editor.putInt(SP_TO_HOUR_OF_DAY, this.planToHourOfDay);
-        editor.putInt(SP_TO_MINUTE, this.planToMinute);
-        editor.putInt(SP_CONSUMED_ML, this.consumedMl);
-        editor.putInt(SP_DAILY_PLAN_ML, this.dailyPlanMl);
+        editor.putInt(SP_FROM_HOUR_OF_DAY, planFromHourOfDay);
+        editor.putInt(SP_FROM_MINUTE, planFromMinute);
+        editor.putInt(SP_TO_HOUR_OF_DAY, planToHourOfDay);
+        editor.putInt(SP_TO_MINUTE, planToMinute);
+        editor.putInt(SP_CONSUMED_ML, consumedMl);
+        editor.putInt(SP_DAILY_PLAN_ML, dailyPlanMl);
 
         editor.commit();
     }
