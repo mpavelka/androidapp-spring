@@ -38,17 +38,21 @@ public class SpringManager {
     // Setters
     public void setDailyPlanMl(int ml) {
         dailyPlanMl = ml;
+        deficitMl = computeDeficitMl();
     }
     public void setConsumedMl(int ml) {
         consumedMl = ml;
+        deficitMl = computeDeficitMl();
     }
     public void setPlanFrom(int hourOfDay, int minute) {
         planFromHourOfDay = hourOfDay;
         planFromMinute = minute;
+        deficitMl = computeDeficitMl();
     }
     public void setPlanTo(int hourOfDay, int minute) {
         planToHourOfDay = hourOfDay;
         planToMinute = minute;
+        deficitMl = computeDeficitMl();
     }
 
     // Getters
