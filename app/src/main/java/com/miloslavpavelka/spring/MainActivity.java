@@ -26,6 +26,8 @@ import android.widget.TimePicker;
 
 import com.gelitenight.waveview.library.WaveView;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -40,6 +42,9 @@ public class MainActivity extends AppCompatActivity {
             editTextPlan,
             editTextPlanFrom,
             editTextPlanTo;
+    private TextView
+            textConsumedMl,
+            textDeficitMl;
     private SpringManager springManager;
 
 
@@ -58,6 +63,8 @@ public class MainActivity extends AppCompatActivity {
         editTextPlan = (EditText) findViewById(R.id.edit_text_plan);
         editTextPlanFrom = (EditText) findViewById(R.id.edit_text_from);
         editTextPlanTo = (EditText) findViewById(R.id.edit_text_to);
+        textConsumedMl = (TextView) findViewById(R.id.text_consumed_ml_value);
+        textDeficitMl = (TextView) findViewById(R.id.text_deficit_value);
         waterLevelView = (WaterLevelView) findViewById(R.id.wave);
     }
 
@@ -65,10 +72,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        updateEditTexts();
-        waterLevelView.animateWaterLevelRatio(
-            springManager.getConsumedPlanRatio()
-        );
+        updateUI();
     }
 
 
@@ -101,7 +105,28 @@ public class MainActivity extends AppCompatActivity {
     private void setTextPlanTo(int phourOfDay, int minute) {
         editTextPlanTo.setText(String.format("%02d", springManager.getPlanToHourOfDay())+":"+String.format("%02d", springManager.getPlanToMinute()));
     }
+    private void setTextConsumedMl(int consumedMl) {
+        textConsumedMl.setText(Integer.toString(consumedMl)+"ml");
+    }
+    private void setTextConsumedMl(String consumedMl) {
+        textConsumedMl.setText(consumedMl+"ml");
+    }
+    private void setTextDeficitMl(int deficitMl) {
+        textDeficitMl.setText(Integer.toString(deficitMl)+"ml");
+    }
+    private void setTextDeficitMl(String deficitMl) {
+        textDeficitMl.setText(deficitMl+"ml");
+    }
 
+    private void updateUI() {
+        updateEditTexts();
+        Log.d(TAG, "consumedPlanRatio: "+Float.toString(springManager.getConsumedPlanRatio()));
+        waterLevelView.animateWaterLevelRatio(
+                (float)1-springManager.getConsumedPlanRatio()
+        );
+        animateConsumptionMl();
+        animateDeficitMl();
+    }
 
     private void updateEditTexts() {
         setTextPlan(
@@ -114,6 +139,37 @@ public class MainActivity extends AppCompatActivity {
                 springManager.getPlanToMinute());
     }
 
+    private void animateConsumptionMl() {
+        ValueAnimator animator = ValueAnimator.ofInt(
+                springManager.getPrevConsumedMl(),
+                springManager.getConsumedMl());
+        animator.setDuration(1000);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                // This happens on the UI thread apparently
+                setTextConsumedMl(animation.getAnimatedValue().toString());
+            }
+        });
+        animator.start();
+
+    }
+    private void animateDeficitMl() {
+        ValueAnimator animator = ValueAnimator.ofInt(
+                springManager.getPrevDeficitMl(),
+                springManager.getDeficitMl());
+        animator.setDuration(1000);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                // This happens on the UI thread apparently
+                setTextDeficitMl(animation.getAnimatedValue().toString());
+            }
+        });
+        animator.start();
+
+    }
+
 
     // Click listeners
 
@@ -124,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPlanSet(int plan) {
                 springManager.setDailyPlanMl(plan);
-                updateEditTexts();
+                updateUI();
             }
         });
         planMlPickerFragment.setInitValue(springManager.getDailyPlanMl());
@@ -139,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                 springManager.setPlanFrom(hourOfDay, minute);
-                updateEditTexts();
+                updateUI();
             }
         });
         timePickerFragment.show(getSupportFragmentManager(), "timePickerFrom");
@@ -153,29 +209,25 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                 springManager.setPlanTo(hourOfDay, minute);
-                updateEditTexts();
+                updateUI();
             }
         });
         timePickerFragment.show(getSupportFragmentManager(), "timePickerTo");
     }
 
-
-    /*
-    * Displays the drink! dialog
-    * Sets a dialog's button click listener
-    *
-    * */
-    public void showDrinkDialog() {
+    public void onClickFAB(View view) {
         final DrinkDialogFragment drinkDialogFragment = new DrinkDialogFragment();
         drinkDialogFragment.setOnButtonDrinkClick(new Runnable() {
             @Override
             public void run() {
-                int result = drinkDialogFragment.getResult();
+                springManager.drinkMl(drinkDialogFragment.getResult());
+                updateUI();
 
             }
         });
         drinkDialogFragment.show(getSupportFragmentManager(), "drinkDialog");
     }
+
 
 }
 

@@ -25,6 +25,8 @@ public class SpringManager {
             dailyPlanMl,
             consumedMl,
             deficitMl,
+            prevConsumedMl,
+            prevDeficitMl,
             planFromHourOfDay,
             planFromMinute,
             planToHourOfDay,
@@ -32,32 +34,47 @@ public class SpringManager {
 
     SpringManager(Context context) {
         this.context = context;
+        this.deficitMl = 0;
         this.reset();
     }
 
     // Setters
     public void setDailyPlanMl(int ml) {
         dailyPlanMl = ml;
-        deficitMl = computeDeficitMl();
+        setDeficitMl(computeDeficitMl());
     }
     public void setConsumedMl(int ml) {
+        prevConsumedMl = consumedMl;
         consumedMl = ml;
-        deficitMl = computeDeficitMl();
+        setDeficitMl(computeDeficitMl());
     }
     public void setPlanFrom(int hourOfDay, int minute) {
         planFromHourOfDay = hourOfDay;
         planFromMinute = minute;
-        deficitMl = computeDeficitMl();
+        setDeficitMl(computeDeficitMl());
     }
     public void setPlanTo(int hourOfDay, int minute) {
         planToHourOfDay = hourOfDay;
         planToMinute = minute;
-        deficitMl = computeDeficitMl();
+        setDeficitMl(computeDeficitMl());
+    }
+    public void drinkMl(int ml) {
+        setConsumedMl(getConsumedMl()+ml);
+    }
+    protected void setDeficitMl(int ml) {
+        prevDeficitMl = deficitMl;
+        deficitMl = ml;
     }
 
     // Getters
     public int getDailyPlanMl() {
         return dailyPlanMl;
+    }
+    public int getPrevConsumedMl() {
+        return prevConsumedMl;
+    }
+    public int getPrevDeficitMl() {
+        return prevDeficitMl;
     }
     public int getConsumedMl() {
         return consumedMl;
@@ -79,8 +96,8 @@ public class SpringManager {
     }
     public float getConsumedPlanRatio() {
         if (dailyPlanMl == 0)
-            return 1;
-        return consumedMl/dailyPlanMl;
+            return (float)1;
+        return (float)consumedMl/(float)dailyPlanMl;
     }
 
     private SharedPreferences getPreferences() {
@@ -89,6 +106,8 @@ public class SpringManager {
 
     void reset() {
         this.dailyPlanMl = 0;
+        this.prevConsumedMl = this.consumedMl;
+        this.prevDeficitMl = this.deficitMl;
         this.consumedMl = 0;
         this.deficitMl = 0;
         this.planFromHourOfDay = 0;
