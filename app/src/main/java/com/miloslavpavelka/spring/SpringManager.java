@@ -155,12 +155,12 @@ public class SpringManager {
 
     void load() {
         SharedPreferences prefs = this.getPreferences();
-        planFromHourOfDay = prefs.getInt(SP_FROM_HOUR_OF_DAY, 0);
+        planFromHourOfDay = prefs.getInt(SP_FROM_HOUR_OF_DAY, 8);
         planFromMinute = prefs.getInt(SP_FROM_MINUTE, 0);
-        planToHourOfDay = prefs.getInt(SP_TO_HOUR_OF_DAY, 0);
+        planToHourOfDay = prefs.getInt(SP_TO_HOUR_OF_DAY, 21);
         planToMinute = prefs.getInt(SP_TO_MINUTE, 0);
         consumedMl = prefs.getInt(SP_CONSUMED_ML, 0);
-        dailyPlanMl = prefs.getInt(SP_DAILY_PLAN_ML, 0);
+        dailyPlanMl = prefs.getInt(SP_DAILY_PLAN_ML, 2500);
 
         // Compute deficit
         this.deficitMl = this.computeDeficitMl();
