@@ -87,19 +87,36 @@ public class SpringManager {
         alarmMgr.cancel(alarmIntent);
 
         // Compute next notification time
-        int elapsedMinutes = getElapsedMinutes();
-        int idealConsumedMl = getIdealConsumedMl(dailyPlanMl,getPlanMinutesRange(),elapsedMinutes);
-        int elapsedMinutesForNextNotification = getElapsedMinutesForConsumedMl(
+        int minutesToAlarm,
+            elapsedMinutes = getElapsedMinutes(),
+            planMinutesRange = getPlanMinutesRange();
+
+        Log.d(TAG, "elapsedMinutes="+Integer.toString(elapsedMinutes));
+        Log.d(TAG, "planMinutesRange="+Integer.toString(planMinutesRange));
+
+        if (elapsedMinutes > planMinutesRange) {
+            Log.d(TAG, "No alarm scheduled.");
+            return;
+        }
+        else if (elapsedMinutes <= 0) {
+            minutesToAlarm = -elapsedMinutes + getElapsedMinutesForConsumedMl(NOTIFY_WITH_DEFICIT_ML, dailyPlanMl, planMinutesRange);
+        }
+        else {
+            int idealConsumedMl = getIdealConsumedMl(dailyPlanMl,getPlanMinutesRange(),elapsedMinutes);
+            int elapsedMinutesForNextNotification = getElapsedMinutesForConsumedMl(
                 idealConsumedMl-deficitMl+NOTIFY_WITH_DEFICIT_ML,
-            dailyPlanMl,
-            getPlanMinutesRange()
-        );
-        int triggerInMinutes = elapsedMinutesForNextNotification - elapsedMinutes;
+                dailyPlanMl,
+                getPlanMinutesRange()
+            );
+            minutesToAlarm = elapsedMinutesForNextNotification - elapsedMinutes;
+        }
+
+        Log.d(TAG, "Scheduling alarm in "+Integer.toString(minutesToAlarm)+" minutes.");
 
         // Set alarm
         alarmMgr.set(
             AlarmManager.ELAPSED_REALTIME_WAKEUP,
-            SystemClock.elapsedRealtime() + triggerInMinutes * 60 * 1000,
+            SystemClock.elapsedRealtime() + minutesToAlarm * 60 * 1000,
             alarmIntent);
     }
 
