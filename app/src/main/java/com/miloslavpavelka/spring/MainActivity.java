@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        springManager.evaluate();
         updateUI();
     }
 
@@ -184,6 +185,7 @@ public class MainActivity extends AppCompatActivity {
             public void onPlanSet(int plan) {
                 springManager.setDailyPlanMl(plan);
                 springManager.store();
+                springManager.evaluate();
                 updateUI();
             }
         });
@@ -197,9 +199,24 @@ public class MainActivity extends AppCompatActivity {
         TimePickerFragment timePickerFragment = new TimePickerFragment();
         timePickerFragment.setOnTimeSetListener(new TimePickerDialog.OnTimeSetListener() {
             @Override
-            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                springManager.setPlanFrom(hourOfDay, minute);
+            public void onTimeSet(TimePicker view, int fromHourOfDay, int fromMinute) {
+                int toHourOfDay = springManager.getPlanToHourOfDay();
+                int toMinute = springManager.getPlanToMinute();
+
+                // Correcture of times
+                if (fromHourOfDay ==23) {
+                    springManager.setPlanFrom(fromHourOfDay, 0);
+                    springManager.setPlanTo(23, 59);
+                }
+                else if (fromHourOfDay >= toHourOfDay) {
+                    springManager.setPlanFrom(fromHourOfDay, fromMinute);
+                    springManager.setPlanTo(fromHourOfDay+1, fromMinute);
+                }
+                else {
+                    springManager.setPlanFrom(fromHourOfDay, fromMinute);
+                }
                 springManager.store();
+                springManager.evaluate();
                 updateUI();
             }
         });
@@ -212,9 +229,24 @@ public class MainActivity extends AppCompatActivity {
         TimePickerFragment timePickerFragment = new TimePickerFragment();
         timePickerFragment.setOnTimeSetListener(new TimePickerDialog.OnTimeSetListener() {
             @Override
-            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                springManager.setPlanTo(hourOfDay, minute);
+            public void onTimeSet(TimePicker view, int toHourOfDay, int toMinute) {
+                int fromHourOfDay = springManager.getPlanFromHourOfDay();
+                int fromMinute = springManager.getPlanFromMinute();
+
+                // Correcture of times
+                if (toHourOfDay <= 1) {
+                    springManager.setPlanFrom(0, toMinute);
+                    springManager.setPlanTo(1, toMinute);
+                }
+                else if (toHourOfDay <= fromHourOfDay) {
+                    springManager.setPlanFrom(toHourOfDay-1, toMinute);
+                    springManager.setPlanTo(toHourOfDay, toMinute);
+                }
+                else {
+                    springManager.setPlanTo(toHourOfDay, toMinute);
+                }
                 springManager.store();
+                springManager.evaluate();
                 updateUI();
             }
         });
@@ -228,6 +260,7 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 springManager.drinkMl(drinkDialogFragment.getResult());
                 springManager.store();
+                springManager.evaluate();
                 updateUI();
 
             }

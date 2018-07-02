@@ -54,22 +54,18 @@ public class SpringManager {
     // Setters
     public void setDailyPlanMl(int ml) {
         dailyPlanMl = ml;
-        setDeficitMl(computeDeficitMl());
     }
     public void setConsumedMl(int ml) {
         prevConsumedMl = consumedMl;
         consumedMl = ml;
-        setDeficitMl(computeDeficitMl());
     }
     public void setPlanFrom(int hourOfDay, int minute) {
         planFromHourOfDay = hourOfDay;
         planFromMinute = minute;
-        setDeficitMl(computeDeficitMl());
     }
     public void setPlanTo(int hourOfDay, int minute) {
         planToHourOfDay = hourOfDay;
         planToMinute = minute;
-        setDeficitMl(computeDeficitMl());
     }
     public void drinkMl(int ml) {
         setConsumedMl(getConsumedMl()+ml);
@@ -77,6 +73,10 @@ public class SpringManager {
     protected void setDeficitMl(int ml) {
         prevDeficitMl = deficitMl;
         deficitMl = ml;
+    }
+
+    public void evaluate() {
+        setDeficitMl(computeDeficitMl());
         // With newly set deficit, reschedule next alarm
         rescheduleAlarm();
     }
@@ -182,13 +182,19 @@ public class SpringManager {
 
     int computeDeficitMl() {
         int deficitMl,
-            idealConsumedMl;
+            idealConsumedMl,
+            elapsedMinutes = getElapsedMinutes(),
+            planMinutesRange = getPlanMinutesRange();
 
         // Compute
-        idealConsumedMl = getIdealConsumedMl(dailyPlanMl, getPlanMinutesRange(), getElapsedMinutes());
+        idealConsumedMl = getIdealConsumedMl(dailyPlanMl, planMinutesRange, elapsedMinutes);
         deficitMl = idealConsumedMl - consumedMl;
 
         // Return
+        if (elapsedMinutes < 0)
+            return 0;
+        if (elapsedMinutes > planMinutesRange)
+            return 0;
         if (deficitMl <= 0)
             return 0;
         return deficitMl;
