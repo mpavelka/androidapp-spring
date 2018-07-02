@@ -1,7 +1,12 @@
 package com.miloslavpavelka.spring;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.SystemClock;
+import android.util.Log;
 
 import java.util.Calendar;
 
@@ -10,6 +15,7 @@ import java.util.Calendar;
  */
 
 public class SpringManager {
+    public static final String TAG = "SpringManager";
     Context context;
 
     static final String
@@ -32,9 +38,15 @@ public class SpringManager {
             planToHourOfDay,
             planToMinute;
 
+    private AlarmManager alarmMgr;
+    private PendingIntent alarmIntent;
+
     SpringManager(Context context) {
         this.context = context;
         this.deficitMl = 0;
+        this.alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        Intent alarmIntent = new Intent(context, SpringAlarmReceiver.class);
+        this.alarmIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
         this.reset();
     }
 
@@ -64,6 +76,17 @@ public class SpringManager {
     protected void setDeficitMl(int ml) {
         prevDeficitMl = deficitMl;
         deficitMl = ml;
+        // With newly set deficit, reschedule next alarm
+        rescheduleAlarm();
+    }
+
+    private void rescheduleAlarm() {
+        Log.d(TAG, "Rescheduling alarm");
+        alarmMgr.cancel(alarmIntent);
+        alarmMgr.set(
+            AlarmManager.ELAPSED_REALTIME_WAKEUP,
+            SystemClock.elapsedRealtime() + 10 * 1000,
+            alarmIntent);
     }
 
     // Getters
