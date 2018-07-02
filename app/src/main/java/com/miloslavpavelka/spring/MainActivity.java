@@ -92,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_reset:
                 springManager.setConsumedMl(0);
                 springManager.store();
+                springManager.evaluate();
                 updateUI();
                 return true;
             default:
