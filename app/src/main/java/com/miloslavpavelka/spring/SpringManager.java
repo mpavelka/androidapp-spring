@@ -16,6 +16,7 @@ import java.util.Calendar;
 
 public class SpringManager {
     public static final String TAG = "SpringManager";
+    public static final int NOTIFY_WITH_DEFICIT_ML = 250;
     Context context;
 
     static final String
@@ -82,10 +83,23 @@ public class SpringManager {
 
     private void rescheduleAlarm() {
         Log.d(TAG, "Rescheduling alarm");
+        // Cancel alarm
         alarmMgr.cancel(alarmIntent);
+
+        // Compute next notification time
+        int elapsedMinutes = getElapsedMinutes();
+        int idealConsumedMl = getIdealConsumedMl(dailyPlanMl,getPlanMinutesRange(),elapsedMinutes);
+        int elapsedMinutesForNextNotification = getElapsedMinutesForConsumedMl(
+                idealConsumedMl-deficitMl+NOTIFY_WITH_DEFICIT_ML,
+            dailyPlanMl,
+            getPlanMinutesRange()
+        );
+        int triggerInMinutes = elapsedMinutesForNextNotification - elapsedMinutes;
+
+        // Set alarm
         alarmMgr.set(
             AlarmManager.ELAPSED_REALTIME_WAKEUP,
-            SystemClock.elapsedRealtime() + 10 * 1000,
+            SystemClock.elapsedRealtime() + triggerInMinutes * 60 * 1000,
             alarmIntent);
     }
 
@@ -167,26 +181,36 @@ public class SpringManager {
     }
 
     int computeDeficitMl() {
-        int resultMl,
-            elapsedMinutes,
-            planRangeMinutes,
+        int deficitMl,
             idealConsumedMl;
 
-        // Current time
-        Calendar cal = Calendar.getInstance();
-        int currentHourOfDay = cal.get(Calendar.HOUR_OF_DAY),
-            currentMinute    = cal.get(Calendar.MINUTE);
-
         // Compute
-        elapsedMinutes = 60*(currentHourOfDay-this.planFromHourOfDay) - this.planFromMinute + currentMinute;
-        planRangeMinutes = 60*(this.planToHourOfDay-this.planFromHourOfDay) - this.planFromMinute + this.planToMinute;
-        idealConsumedMl = (int)(this.dailyPlanMl * ((float)elapsedMinutes/(float)planRangeMinutes)); // Linear interpolation
-        resultMl = idealConsumedMl - this.consumedMl;
+        idealConsumedMl = getIdealConsumedMl(dailyPlanMl, getPlanMinutesRange(), getElapsedMinutes());
+        deficitMl = idealConsumedMl - consumedMl;
 
         // Return
-        if (resultMl <= 0)
+        if (deficitMl <= 0)
             return 0;
-        return resultMl;
+        return deficitMl;
+    }
 
+    int getElapsedMinutes() {
+        Calendar cal = Calendar.getInstance();
+        int currentHourOfDay = cal.get(Calendar.HOUR_OF_DAY),
+                currentMinute    = cal.get(Calendar.MINUTE);
+        return 60*(currentHourOfDay-this.planFromHourOfDay) - this.planFromMinute + currentMinute;
+    }
+
+    int getPlanMinutesRange() {
+        return 60*(planToHourOfDay-planFromHourOfDay) - planFromMinute + planToMinute;
+    }
+
+    int getIdealConsumedMl(int dailyPlanMl, int planMinutesRange, int elapsedMinutes) {
+        // Utilizes linear interpolation
+        return (int)(dailyPlanMl * ((float)elapsedMinutes/(float)planMinutesRange));
+    }
+
+    int getElapsedMinutesForConsumedMl(int consumedMl, int dailyPlanMl, int planMinutesRange) {
+        return (int)((float)(consumedMl*planMinutesRange)/(float)(dailyPlanMl));
     }
 }
